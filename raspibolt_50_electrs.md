@@ -54,8 +54,8 @@ As there are no binaries available, we will compile the application directly fro
   ```sh
   # download
   $ cd /tmp
-  $ curl https://static.rust-lang.org/dist/rust-1.44.1-armv7-unknown-linux-gnueabihf.tar.gz -o rust.tar.gz
-  $ curl https://static.rust-lang.org/dist/rust-1.44.1-armv7-unknown-linux-gnueabihf.tar.gz.asc -o rust.tar.gz.asc
+  $ curl https://static.rust-lang.org/dist/rust-1.48.0-armv7-unknown-linux-gnueabihf.tar.gz -o rust.tar.gz
+  $ curl https://static.rust-lang.org/dist/rust-1.48.0-armv7-unknown-linux-gnueabihf.tar.gz.asc -o rust.tar.gz.asc
   $ curl https://keybase.io/rust/pgp_keys.asc | gpg --import
 
   # verify
@@ -91,7 +91,8 @@ The whole process takes about 30 minutes.
   ```sh
   # download
   $ cd /home/admin/rust
-  $ git clone --branch v0.8.5 https://github.com/romanz/electrs.git
+  # latest electrs version can always be checked (in case guide is not updated in time) at: https://github.com/romanz/electrs and clicking master > tags
+  $ git clone --branch v0.8.6 https://github.com/romanz/electrs.git
   $ cd electrs
 
   # compile
@@ -421,6 +422,7 @@ On your regular computer, configure [Electrum wallet](https://electrum.org) to u
 * Uncheck "Select server automatically"
 * Enter the hostname (e.g. `raspibolt.local`) or or ip address (e.g. `192.168.0.20`) of your RaspiBolt in the address field
 * Enter the port `50002`
+* If you have previously been connecting over TOR, make sure everything in Proxy tab is unchecked so direct connection to Raspibolt on your LAN can be made
 * `Close` and check connection in tab "Console"
 
 [![Electrum Wallet local](images/50_electrum_wallet_local.png)](images/50_electrum_wallet_local.png){:target="_blank"}
@@ -432,6 +434,17 @@ You can force Electrum to only use your own server on startup with the following
 ```sh
 $ electrum --oneserver --server raspibolt.local:50002:s
 ```
+BONUS INFO:
+On Mac, you can use Script Editor to automate this and create a new App with the following content:
+```sh
+tell application "Terminal"
+	activate
+	do script "/Applications/Electrum.app/Contents/MacOS/run_electrum --oneserver --server Raspibolt-IP-Goes-Here:50002:s"
+end tell
+```
+This "app" will basically do same thing with Electrum 4.0.2 as if you took the command line from above that is specific to Electrum's location on Mac and just ran it in your Terminal.
+Make sure you save it in Script Editor as an .app file. 
+Now you can run Electrum by clicking on this app which will force only connection to your Raspibolt. You will know it is working if Terminal opens (which needs to stay open as long as Electrum is running) and in Electrum's Network section, everything is grayed out except direct IP if your Raspibolt. This means everything is working as expected.
 
 ### Tor
 
@@ -514,6 +527,10 @@ Updating a [new release](https://github.com/romanz/electrs/releases){:target="_b
   $ sudo cp ./target/release/electrs /usr/local/bin/
   $ sudo systemctl start electrs
   ```
+BONUS INFO:
+When installing Electrs, you might notice alert in terminal warning you about insecurities in some of the files that are being downloaded.
+If you try to update those keep in mind that some of the files will be changed. Later on when you are updating Electrs and after you do Git Checkout Version you will get a message "Your local changes to the following files would be overwritten by checkout." To resolve that run: git reset HEAD --hard
+Now you can proceed with the Git checkout, but security updates you did previously will be gone (you can do the again if you wish).
 
 ---
 
